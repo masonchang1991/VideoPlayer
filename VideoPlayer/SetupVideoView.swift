@@ -66,7 +66,7 @@ extension VideoViewController {
         
         self.playerView.layer.addSublayer(playerLayer)
         self.playerLayer.frame = self.playerView.bounds
-        self.playerLayer.backgroundColor = UIColor.blue.cgColor
+        self.playerLayer.backgroundColor = UIColor.black.cgColor
         
     }
     

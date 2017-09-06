@@ -70,13 +70,13 @@ class VideoViewController: UIViewController {
                 
                 self.AVisStopped = true
                 
-                print("Pause")
+                self.playButton.setTitle("Play", for: .normal)
                 
             } else if player?.rate == 1.0 {
                 
                 self.AVisStopped = false
                 
-                print("Play")
+                self.playButton.setTitle("Pause", for: .normal)
                 
             } else {
                 
@@ -85,7 +85,7 @@ class VideoViewController: UIViewController {
             }
             
         } else if keyPath == "status" {
-            
+        
             if player?.status == .readyToPlay {
                 
                 player?.play()
@@ -94,11 +94,17 @@ class VideoViewController: UIViewController {
                 
                 // Todo: Alert
                 
+                let failedAlert = UIAlertController(title: "Error", message: "Your URL is Wrong", preferredStyle: .alert)
+                
+                failedAlert.addAction(UIAlertAction(title: "ok", style: .cancel, handler: { (alert) in
+                    
+                    failedAlert.dismiss(animated: false, completion: nil)
+                    
+                }))
+                
+                self.present(failedAlert, animated: false, completion: nil)
             }
-            
-            
         }
-        
     }
    
     func addObserver() {
@@ -107,7 +113,6 @@ class VideoViewController: UIViewController {
         
         self.player?.addObserver(self, forKeyPath: "status", options: .new, context: nil)
         
-        
     }
     
     func removeObserver() {
@@ -115,7 +120,6 @@ class VideoViewController: UIViewController {
         self.player?.removeObserver(self, forKeyPath: "rate")
         
         self.player?.removeObserver(self, forKeyPath: "status")
-        
         
     }
     
@@ -126,12 +130,11 @@ class VideoViewController: UIViewController {
         if AVisStopped {
             
             self.player?.play()
-            self.playButton.setTitle("Pause", for: .normal)
             
         } else {
             
             self.player?.pause()
-            self.playButton.setTitle("Play", for: .normal)
+            
         }
         
     }
@@ -140,13 +143,19 @@ class VideoViewController: UIViewController {
         
         if AVisMuted {
             
+            self.muteButton.setTitle("Mute", for: .normal)
+            
             self.player?.isMuted = false
-            self.muteButton.setTitle("Unmute", for: .normal)
+            
+            self.AVisMuted = false
+            
             
         } else {
             
+            self.muteButton.setTitle("Unmute", for: .normal)
             self.player?.isMuted = true
-            self.muteButton.setTitle("Mute", for: .normal)
+            self.AVisMuted = true
+
         }
         
     }
@@ -161,10 +170,7 @@ class VideoViewController: UIViewController {
         
         self.player = AVPlayer(url: videoURL)
         self.playerLayer.player = player
-//        player?.play()
-        
         self.addObserver()
-        
         
     }
     
@@ -175,6 +181,8 @@ class VideoViewController: UIViewController {
 extension VideoViewController: UISearchBarDelegate {
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        
+         removeObserver()
 
         // MARK: Call URLVideoManger
         
@@ -188,9 +196,6 @@ extension VideoViewController: UISearchBarDelegate {
         
         self.searchURLText = searchText
 
-        removeObserver()
-        
-        
     }
     
     
